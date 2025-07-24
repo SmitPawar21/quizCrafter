@@ -1,36 +1,62 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# QuizCrafter 🧠📄
 
-## Getting Started
+QuizCrafter is an intelligent quiz generation system that takes PDFs as input and outputs interactive flashcard-style questions. It's designed for students, educators, and learners who want to turn study materials into engaging quizzes automatically.
 
-First, run the development server:
+## 🚀 Project Idea
+
+The goal of QuizCrafter is simple:
+> **Upload a PDF → Get Quiz Questions → Study Smarter**
+
+QuizCrafter uses the power of AI and language models to extract meaningful questions from study material in PDFs. The app intelligently processes text, splits it into manageable chunks, and generates questions using the OpenAI API.
+
+---
+
+### Key Highlights:
+- **Rule-based validation**: Ensures the number of questions requested is feasible (based on PDF length).
+- **Chunking logic**: Breaks down PDF content into ~300-word chunks.
+- **Circular chunk selection**: Efficient use of context by rotating chunks during LLM calls.
+- **Dynamic UI**: Flashcards are generated on the frontend using a queue-based structure.
+- **Optimized prompt engineering**: Manages question generation batches intelligently.
+
+_Chunking and orchestration of the LLM logic will be implemented using **LangChain**, **LangGraph**, and **LangSmith**._
+
+---
+
+## 🛠 Tech Stack
+
+### Frontend + Backend (Monorepo in Next.js)
+
+- **Next.js** – Fullstack React framework
+- **Tailwind CSS** – Utility-first styling
+- **Zustand** – Global state management
+- **Formidable** – File upload handling
+- **Axios** – API calls
+- **LangChain** *(planned)* – For chunk management and LLM orchestration
+- **LangGraph & LangSmith** *(planned)* – For intelligent flows and debugging
+
+---
+
+## 🧪 Features (WIP)
+
+- ✅ PDF Upload via drag & drop
+- ✅ Rule-check and error messaging
+- 🛠️ LangChain chunking integration
+- 🛠️ Flashcard-style UI generation
+- 🛠️ Queue-based flashcard flow
+- 🔒 Future support for user sessions and saving history
+
+---
+
+## 📦 Installation
 
 ```bash
+git clone https://github.com/your-username/quizcrafter.git
+cd quizcrafter
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Inspiration:
 
-You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
+Inspired by the learning struggles of modern students, QuizCrafter is meant to bring the power of AI to everyday studying.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+### Maintained By Smit Pawar
