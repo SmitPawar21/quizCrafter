@@ -1,4 +1,4 @@
-# QuizCrafter 🧠📄
+# QuizCrafter 
 
 QuizCrafter is an intelligent quiz generation system that takes PDFs as input and outputs interactive flashcard-style questions. It's designed for students, educators, and learners who want to turn study materials into engaging quizzes automatically.
 
@@ -43,7 +43,6 @@ _Chunking and orchestration of the LLM logic will be implemented using **LangCha
 - 🛠️ LangChain chunking integration
 - 🛠️ Flashcard-style UI generation
 - 🛠️ Queue-based flashcard flow
-- 🔒 Future support for user sessions and saving history
 
 ---
 
@@ -54,9 +53,28 @@ git clone https://github.com/your-username/quizcrafter.git
 cd quizcrafter
 npm install
 npm run dev
+```
+
+## Folder Structure
+
+```bash
+/pages
+  /api
+    quiz_generation.js
+/components
+/utils
+/hooks
+/public
+/styles
+```
 
 ## Inspiration:
 
 Inspired by the learning struggles of modern students, QuizCrafter is meant to bring the power of AI to everyday studying.
 
-### Maintained By Smit Pawar
+## Maintained By 
+
+Smit Pawar
+
+pawar.smit2108@gmail.com
+
