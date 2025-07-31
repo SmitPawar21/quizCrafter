@@ -13,8 +13,8 @@ QuizCrafter uses the power of AI and language models to extract meaningful quest
 
 ### Key Highlights:
 - **Rule-based validation**: Ensures the number of questions requested is feasible (based on PDF length).
-- **Chunking logic**: Breaks down PDF content into ~300-word chunks.
-- **Circular chunk selection**: Efficient use of context by rotating chunks during LLM calls.
+- **Chunking logic**: Breaks down PDF content chunks by using the langchain package.
+- **Meaningful chunk selection**: Selecting chunks greater than size of 200 so that LLM gets sufficient context.
 - **Dynamic UI**: Flashcards are generated on the frontend using a queue-based structure.
 - **Optimized prompt engineering**: Manages question generation batches intelligently.
 
@@ -29,10 +29,8 @@ _Chunking and orchestration of the LLM logic will be implemented using **LangCha
 - **Next.js** – Fullstack React framework
 - **Tailwind CSS** – Utility-first styling
 - **Zustand** – Global state management
-- **Formidable** – File upload handling
 - **Axios** – API calls
-- **LangChain** *(planned)* – For chunk management and LLM orchestration
-- **LangGraph & LangSmith** *(planned)* – For intelligent flows and debugging
+- **LangChain** – For chunk management and LLM orchestration
 
 ---
 
