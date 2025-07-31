@@ -11,6 +11,11 @@ QuizCrafter uses the power of AI and language models to extract meaningful quest
 
 ---
 
+![QuizCrafter Demo](https://drive.google.com/file/d/1po4CcY4O-FsDfgAGu_pDTo0Ab04ZXE6p/view?usp=drive_link)
+
+[![QuizCrafter Demo]](https://drive.google.com/file/d/1po4CcY4O-FsDfgAGu_pDTo0Ab04ZXE6p/view?usp=drive_link)
+
+
 ### Key Highlights:
 - **Rule-based validation**: Ensures the number of questions requested is feasible (based on PDF length).
 - **Chunking logic**: Breaks down PDF content chunks by using the langchain package.
