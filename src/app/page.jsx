@@ -1,8 +1,7 @@
 "use client"
 
 import React, { useState, useRef } from 'react';
-import { Upload, FileText, X, CheckCircle } from 'lucide-react';
-import toast from 'react-hot-toast';
+import { Upload, FileText, X, CheckCircle, Loader } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useQuizStore } from '@/store/useQuizStore';
 
@@ -11,6 +10,8 @@ export default function Home() {
   const [uploadedFile, setUploadedFile] = useState(null);
   const [isUploading, setIsUploading] = useState(false);
   const fileInputRef = useRef(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [numberOfQuestions, setNumberOfQuestions] = useState(5);
   const router = useRouter();
   const {setQuizData} = useQuizStore();
 
@@ -47,14 +48,13 @@ export default function Home() {
       return;
     }
 
-    if (file.size > 10 * 1024 * 1024) { // 10MB limit
+    if (file.size > 10 * 1024 * 1024) {
       alert('File size must be less than 10MB.');
       return;
     }
 
     setIsUploading(true);
 
-    // Simulate upload process
     setTimeout(() => {
       setUploadedFile(file);
       setIsUploading(false);
@@ -72,47 +72,79 @@ export default function Home() {
     }
   };
 
-const generateQuiz = async () => {
-  if (!uploadedFile) {
-    toast.error("Please upload a file first");
-    return;
-  }
-
-  console.log('Generate quiz from:', uploadedFile.name);  
-
-  try {
-    const formData = new FormData();
-    formData.append('pdf', uploadedFile);
-    
-    const response = await fetch("/api/quiz_generation", {
-      method: 'POST',
-      body: formData
-    });
-
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
+  const generateQuiz = async () => {
+    if (!uploadedFile) {
+      alert("Please upload a file first");
+      return;
     }
 
-    const data = await response.json();
-    console.log(data);
+    console.log('Generate quiz from:', uploadedFile.name);
+    setIsLoading(true);
 
-    toast.success("Quiz generated successfully!");
-    
-    // Store data in Zustand store
-    setQuizData(data); 
-    
-    router.push('/quiz_section'); 
+    try {
+      const formData = new FormData();
+      formData.append('pdf', uploadedFile);
+      formData.append('number', numberOfQuestions);
 
-  } catch (err) {
-    console.error(err);
-    toast.error(err.message || "Failed to generate quiz");
-  }
-};
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 60000);
+
+      const response = await fetch("/api/quiz_generation", {
+        method: 'POST',
+        body: formData,
+        signal: controller.signal
+      });
+
+      clearTimeout(timeoutId);
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({ error: 'Unknown error occurred' }));
+
+        if (errorData.error.name === "InsufficientQuotaError") {
+          alert("You exceeded your current quota, please check your plan and billing details. For more information on this error, read the docs: https://platform.openai.com/docs/guides/error-codes/api-errors.")
+        } else {
+          alert(errorData.error.name);
+        }
+        return;
+      }
+
+      const data = await response.json();
+      console.log('Quiz generation response:', data);
+
+      if (!data.quiz || data.quiz.length === 0) {
+        throw new Error('No quiz questions were generated from the PDF');
+      }
+
+      alert("Quiz generated successfully!");
+      setQuizData(data.quiz);
+
+      router.push('/quiz_section');
+
+    } catch (err) {
+      console.error('Quiz generation error:', err);
+
+      if (err.name === 'AbortError') {
+        alert("Request timed out. Please try with a smaller PDF or try again.");
+      } else {
+        alert(err.message || "Failed to generate quiz");
+      }
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-3xl mx-auto">
-        <Toaster position="top-right" reverseOrder={false} />
+        {isLoading && (
+          <div className='fixed top-0 left-0 w-full h-full z-50'>
+            <div className='absolute w-full h-full bg-gray-300 opacity-50'></div>
+            <div className='absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2'>
+              <Loader className='animate-spin h-12 w-12 text-indigo-600' />
+            </div>
+          </div>
+        )}
+
         {/* Header */}
         <div className="text-center mb-12">
           <div className="mx-auto h-16 w-16 bg-indigo-600 rounded-full flex items-center justify-center mb-6">
@@ -127,12 +159,18 @@ const generateQuiz = async () => {
         </div>
 
         {/* Upload Area */}
-        <div className="bg-white rounded-2xl shadow-xl p-8 mb-8">
+        <div className="bg-white rounded-2xl shadow-xl p-8 mb-8 flex flex-col items-center gap-2">
+
+          <div className='w-[100%] text-black flex gap-2 justify-center items-center'>
+            select number of questions
+            <input className='w-[100px] bg-green-600 text-white rounded z-100 px-3' type='number' value={numberOfQuestions} onChange={(e) => setNumberOfQuestions(e.target.value)} />
+          </div>
+
           {!uploadedFile ? (
             <div
               className={`relative border-2 border-dashed rounded-xl p-12 text-center transition-all duration-200 ${dragActive
-                  ? 'border-indigo-500 bg-indigo-50'
-                  : 'border-gray-300 hover:border-indigo-400 hover:bg-gray-50'
+                ? 'border-indigo-500 bg-indigo-50'
+                : 'border-gray-300 hover:border-indigo-400 hover:bg-gray-50'
                 }`}
               onDragEnter={handleDrag}
               onDragLeave={handleDrag}
@@ -180,10 +218,10 @@ const generateQuiz = async () => {
                 <CheckCircle className="h-8 w-8 text-green-500 mr-4" />
                 <div>
                   <h4 className="text-lg font-medium text-gray-900">
-                    {uploadedFile.name}
+                    {uploadedFile?.name ? String(uploadedFile.name) : 'Unknown file'}
                   </h4>
                   <p className="text-sm text-gray-500">
-                    {(uploadedFile.size / 1024 / 1024).toFixed(2)} MB • Ready for processing
+                    {uploadedFile?.size ? (uploadedFile.size / 1024 / 1024).toFixed(2) : '0'} MB • Ready for processing
                   </p>
                 </div>
               </div>
@@ -195,6 +233,11 @@ const generateQuiz = async () => {
               </button>
             </div>
           )}
+
+          <div className='text-black px-10 text-center'>
+            Note: The scoring pattern for the generated quiz is +2 points for a correct answer and -1 point for a wrong answer.
+          </div>
+
         </div>
 
         {/* Action Buttons */}
@@ -208,9 +251,10 @@ const generateQuiz = async () => {
             </button>
             <button
               onClick={generateQuiz}
-              className="px-8 py-3 bg-indigo-600 text-white font-medium rounded-lg hover:bg-indigo-700 transition-colors duration-200 shadow-lg"
+              disabled={isLoading}
+              className="px-8 py-3 bg-indigo-600 text-white font-medium rounded-lg hover:bg-indigo-700 transition-colors duration-200 shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              Generate Quiz
+              {isLoading ? 'Generating...' : 'Generate Quiz'}
             </button>
           </div>
         )}

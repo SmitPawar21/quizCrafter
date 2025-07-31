@@ -1,9 +1,9 @@
 import { create } from "zustand";
 
 export const useQuizStore = create((set, get) => ({
-    quizData: null, // List of Objects
+    quizData: [],
 
     setQuizData: (data) => {
-        set({quizData: data})
+        set({ quizData: data })
     },
 }))
